@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>WalkApp Admin</title>
+  <style>
+    body { font-family: Arial; background: #0a0a0a; color: #fff; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+    th { background: #111; }
+    h1 { color: #0f0; }
+  </style>
+</head>
+<body>
+  <h1>WalkApp Admin Dashboard</h1>
+  <p>Total Commission Earned: ₹<%= totalCommission %></p>
+  <table>
+    <tr><th>Booking ID</th><th>Walker</th><th>Wanderer</th><th>Commission</th><th>Status</th></tr>
+    <% bookings.forEach(b => { %>
+      <tr>
+        <td><%= b._id %></td>
+        <td><%= b.walker.name %></td>
+        <td><%= b.wanderer.name %></td>
+        <td>₹<%= b.commission %></td>
+        <td><%= b.status %></td>
+      </tr>
+    <% }) %>
+  </table>
+</body>
+</html>
