@@ -10,6 +10,7 @@ services:
         value: 4000
       - key: MONGO_URI
         value: mongodb+srv://aidkriya_admin:Ajay%40123@cluster0.x1tgoho.mongodb.net/?appName=Cluster0
+      - key: RAZORPAY_KEY_ID
         value: rzp_test_RadezYZWGZwOa6
       - key: RAZORPAY_KEY_SECRET
-        value: <your_razorpay_secret_here>
+        value: vTQjVG3jxMK7i5AFxN7KF05v
