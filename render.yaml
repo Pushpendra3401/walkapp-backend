@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: walkapp-backend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: MONGO_URI
+        value: mongodb+srv://aidkriya_admin:Ajay%40123@cluster0.x1tgoho.mongodb.net/?appName=Cluster0
+        value: rzp_test_RadezYZWGZwOa6
+      - key: RAZORPAY_KEY_SECRET
+        value: <your_razorpay_secret_here>

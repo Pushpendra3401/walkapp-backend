@@ -8,12 +8,13 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["walker", "wanderer", "admin"], default: "wanderer" },
   location: {
     type: { type: String, enum: ["Point"], default: "Point" },
-    coordinates: { type: [Number], default: [0, 0] } // [lng, lat]
+    coordinates: { type: [Number], default: [0, 0] },
   },
   walletBalance: { type: Number, default: 0 },
   rating: { type: Number, default: 0 },
-  completedWalks: { type: Number, default: 0 }
-});
+  completedWalks: { type: Number, default: 0 },
+  profileImage: { type: String },
+}, { timestamps: true });
 
 userSchema.index({ location: "2dsphere" });
 

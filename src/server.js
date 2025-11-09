@@ -4,16 +4,19 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const socketIo = require("socket.io");
-const connectDB = require("./config/db");
-const path = require('path');
-const bookingRoutes = require('./routes/bookings.routes');
-
+const path = require("path");
 
 dotenv.config();
 
-require("dotenv").config({ path: require("path").resolve(__dirname, "../.env") });
-console.log("✅ Razorpay Key ID:", process.env.RAZORPAY_KEY_ID);
-
+const connectDB = require("./config/db");
+const authRoutes = require("./routes/auth.routes");
+const bookingsRoutesFactory = require("./routes/bookings.routes");
+const usersRoutes = require("./routes/users.routes");
+const walletRoutes = require("./routes/wallet.routes");
+const paymentRoutes = require("./routes/payment.routes");
+const reviewsRoutes = require("./routes/reviews.routes");
+const searchRoutes = require("./routes/search.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 const app = express();
 app.use(express.json());
@@ -22,44 +25,37 @@ app.use(morgan("dev"));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use("/admin", require("./routes/admin.routes"));
 
-app.use('/api/bookings', bookingRoutes);
-
-// ✅ Basic route
+// Basic health
 app.get("/", (req, res) => res.send("WalkApp Backend API running"));
 
-// HTTP + Socket.io setup
+// API routes
+app.use("/api/auth", authRoutes);
+app.use("/api/users", usersRoutes);
+app.use("/api/wallet", walletRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/reviews", reviewsRoutes);
+app.use("/api/search", searchRoutes);
+app.use("/admin", adminRoutes);
+
+// HTTP + Socket.io
 const server = http.createServer(app);
-const io = socketIo(server, { cors: { origin: "*" } });
-const setupSocket = require("./socket");
-setupSocket(server);
+const io = new socketIo.Server(server, { cors: { origin: "*" } });
+app.set("io", io);
+require("./socket")(io);
 
-// ✅ Real-time socket setup
-io.on("connection", (socket) => {
-  console.log("🟢 Socket connected:", socket.id);
-  socket.on("disconnect", () => {
-    console.log("🔴 Socket disconnected:", socket.id);
-  });
-});
+// Mount bookings route factory
+const bookingsRoutes = bookingsRoutesFactory(io);
+app.use("/api/bookings", bookingsRoutes);
 
-// ✅ Start server
+// Start server
 const startServer = async () => {
   await connectDB();
   const PORT = process.env.PORT || 4000;
   server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 };
-startServer();
 
-// ✅ Routes (will be added in Stage 2)
-app.use("/api/auth", require("./routes/auth.routes"));
-app.use("/api/users", require("./routes/users.routes"));
-app.use("/api/payments", require("./routes/payment.routes"));
-app.use("/api/wallet", require("./routes/wallet.routes"));
-app.use("/api/search", require("./routes/search.routes"));
-app.use("/api/reviews", require("./routes/reviews.routes"));
-const bookingsRouter = require("./routes/bookings.routes")(io);
-app.use("/api/bookings", bookingsRouter);
-require("./swagger")(app);
-
-module.exports = { app, startServer };
+startServer().catch((err) => {
+  console.error("❌ Server start failed:", err);
+  process.exit(1);
+});
